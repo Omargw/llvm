@@ -138,6 +138,12 @@ struct DirectiveCostInfo {
   SmallVector<Value *, 4> Args;
 };
 
+struct DirectiveNodeInfo {
+  Function *Fun = nullptr;
+  // The arguments of the call to function.
+  SmallVector<Value *, 4> Args;
+};
+
 struct DirectivePriorityInfo {
   Function *Fun = nullptr;
   // The arguments of the call to function.
@@ -247,6 +253,7 @@ struct DirectiveEnvironment {
   DirectiveDependsInfo DependsInfo;
   DirectiveReductionsInitCombInfo ReductionsInitCombInfo;
   DirectiveCostInfo CostInfo;
+  DirectiveNodeInfo NodeInfo;
   DirectivePriorityInfo PriorityInfo;
   DirectiveOnreadyInfo OnreadyInfo;
   Value *Immediate = nullptr;
@@ -312,6 +319,7 @@ private:
   void gatherFinalInfo(OperandBundleDef &OBDef);
   void gatherIfInfo(OperandBundleDef &OBDef);
   void gatherCostInfo(OperandBundleDef &OBDef);
+  void gatherNodeInfo(OperandBundleDef &OBDef);
   void gatherPriorityInfo(OperandBundleDef &OBDef);
   void gatherLabelInfo(OperandBundleDef &OBDef);
   void gatherOnreadyInfo(OperandBundleDef &OBDef);
@@ -346,6 +354,7 @@ private:
   void verifyDependInfo();
   void verifyReductionInitCombInfo();
   void verifyCostInfo();
+  void verifyNodeInfo();
   void verifyPriorityInfo();
   void verifyOnreadyInfo();
   void verifyDeviceInfo();

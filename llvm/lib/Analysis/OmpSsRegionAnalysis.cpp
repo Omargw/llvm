@@ -262,6 +262,15 @@ void DirectiveEnvironment::gatherCostInfo(OperandBundleDef &OB) {
     CostInfo.Args.push_back(OBArgs[i]);
 }
 
+void DirectiveEnvironment::gatherNodeInfo(OperandBundleDef &OB) {
+  assert(OB.input_size() > 0 &&
+    "Node OperandBundle must have at least function");
+  ArrayRef<Value *> OBArgs = OB.inputs();
+  NodeInfo.Fun = cast<Function>(OBArgs[0]);
+  for (size_t i = 1; i < OBArgs.size(); ++i)
+    NodeInfo.Args.push_back(OBArgs[i]);
+}
+
 void DirectiveEnvironment::gatherPriorityInfo(OperandBundleDef &OB) {
   assert(OB.input_size() > 0 &&
     "Priority OperandBundle must have at least function");
@@ -557,6 +566,14 @@ void DirectiveEnvironment::verifyCostInfo() {
   }
 }
 
+void DirectiveEnvironment::verifyNodeInfo() {
+  for (auto *V : NodeInfo.Args) {
+    if (!valueInDSABundles(V)
+        && !valueInCapturedBundle(V))
+      llvm_unreachable("Node function argument has no associated DSA or capture");
+  }
+}
+
 void DirectiveEnvironment::verifyPriorityInfo() {
   for (auto *V : PriorityInfo.Args) {
     if (!valueInDSABundles(V)
@@ -691,6 +708,7 @@ void DirectiveEnvironment::verify() {
 
   verifyReductionInitCombInfo();
   verifyCostInfo();
+  verifyNodeInfo();
   verifyPriorityInfo();
   verifyOnreadyInfo();
   verifyDeviceInfo();
@@ -752,6 +770,9 @@ DirectiveEnvironment::DirectiveEnvironment(const Instruction *I) {
       break;
     case LLVMContext::OB_oss_cost:
       gatherCostInfo(OBDef);
+      break;
+    case LLVMContext::OB_oss_node:
+      gatherNodeInfo(OBDef);
       break;
     case LLVMContext::OB_oss_priority:
       gatherPriorityInfo(OBDef);
