@@ -157,6 +157,7 @@ public:
     OB_oss_coro_size_store = 67,                  // "OB_oss_coro_size_store"
     OB_oss_immediate = 68,                        // "OB_oss_immediate"
     OB_oss_microtask = 69,                        // "OB_oss_microtask"
+    OB_oss_node = 70,                             // "OB_oss_node"
   };
 
   /// getMDKindID - Return a unique non-zero ID for the specified metadata kind.
