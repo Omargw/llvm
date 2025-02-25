@@ -52,6 +52,7 @@ class Nanos6TaskConstraints {
 private:
   StructType *Ty;
   Type *CostTy;
+  Type *NodeTy;
 
   Nanos6TaskConstraints(){};
   Nanos6TaskConstraints(const Nanos6TaskConstraints&){};
@@ -61,6 +62,7 @@ public:
   static Nanos6TaskConstraints& getInstance(Module &M);
   StructType *getType() const { return Ty; }
   Type *getCostType() const { return CostTy; }
+  Type *getNodeType() const { return NodeTy; }
 };
 
 class Nanos6TaskInvInfo {
