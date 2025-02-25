@@ -48,6 +48,7 @@ public:
     Value *If = nullptr;
     Value *Final = nullptr;
     Value *Cost = nullptr;
+    Value *Node = nullptr;
     Value *Priority = nullptr;
     MapVector<Value *, Type *> Shareds;
     MapVector<Value *, Type *> Privates;

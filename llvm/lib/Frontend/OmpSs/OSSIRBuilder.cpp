@@ -99,6 +99,10 @@ void OmpSsIRBuilder::emitDirectiveData(
     TaskInfo.emplace_back("QUAL.OSS.COST", DirClauses.Cost);
     CapturedList.push_back(DirClauses.Cost);
   }
+  if (DirClauses.Node) {
+    TaskInfo.emplace_back("QUAL.OSS.NODE", DirClauses.Node);
+    CapturedList.push_back(DirClauses.Node);
+  }
   if (DirClauses.Priority) {
     TaskInfo.emplace_back("QUAL.OSS.PRIORITY", DirClauses.Priority);
     CapturedList.push_back(DirClauses.Priority);
