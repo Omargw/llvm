@@ -93,6 +93,7 @@ unsigned clang::getOmpSsSimpleClauseType(OmpSsClauseKind Kind,
   case OSSC_if:
   case OSSC_final:
   case OSSC_cost:
+  case OSSC_node:
   case OSSC_priority:
   case OSSC_label:
   case OSSC_wait:
@@ -171,6 +172,7 @@ const char *clang::getOmpSsSimpleClauseTypeName(OmpSsClauseKind Kind,
   case OSSC_if:
   case OSSC_final:
   case OSSC_cost:
+  case OSSC_node:
   case OSSC_priority:
   case OSSC_label:
   case OSSC_wait:
