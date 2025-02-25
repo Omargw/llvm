@@ -51,6 +51,10 @@ def OSSC_Cost : Clause<"cost"> {
   let clangClass = "OSSCostClause";
   let flangClass = "ScalarIntExpr";
 }
+def OSSC_Node : Clause<"node"> {
+  let clangClass = "OSSNodeClause";
+  let flangClass = "ScalarIntExpr";
+}
 def OSSC_Priority : Clause<"priority"> {
   let clangClass = "OSSPriorityClause";
   let flangClass = "ScalarIntExpr";
@@ -214,6 +218,7 @@ def OSS_Task : Directive<"task"> {
     VersionedClause<OSSC_If>,
     VersionedClause<OSSC_Final>,
     VersionedClause<OSSC_Cost>,
+    VersionedClause<OSSC_Node>,
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
@@ -242,6 +247,7 @@ def OSS_DeclareTask : Directive<"declare task"> {
     VersionedClause<OSSC_If>,
     VersionedClause<OSSC_Final>,
     VersionedClause<OSSC_Cost>,
+    VersionedClause<OSSC_Node>,
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
@@ -308,6 +314,7 @@ def OSS_TaskLoop : Directive<"taskloop"> {
     VersionedClause<OSSC_If>,
     VersionedClause<OSSC_Final>,
     VersionedClause<OSSC_Cost>,
+    VersionedClause<OSSC_Node>,
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
@@ -340,6 +347,7 @@ def OSS_TaskFor : Directive<"task for"> {
     VersionedClause<OSSC_If>,
     VersionedClause<OSSC_Final>,
     VersionedClause<OSSC_Cost>,
+    VersionedClause<OSSC_Node>,
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
@@ -372,6 +380,7 @@ def OSS_TaskLoopFor : Directive<"taskloop for"> {
     VersionedClause<OSSC_If>,
     VersionedClause<OSSC_Final>,
     VersionedClause<OSSC_Cost>,
+    VersionedClause<OSSC_Node>,
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
@@ -410,6 +419,7 @@ def OSS_TaskIter : Directive<"taskiter"> {
     VersionedClause<OSSC_If>,
     VersionedClause<OSSC_Final>,
     VersionedClause<OSSC_Cost>,
+    VersionedClause<OSSC_Node>,
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
