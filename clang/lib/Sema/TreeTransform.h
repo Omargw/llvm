@@ -1762,6 +1762,17 @@ public:
                                           EndLoc);
   }
 
+  /// Build a new OmpSs 'node' clause.
+  ///
+  /// By default, performs semantic analysis to build the new OmpSs clause.
+  /// Subclasses may override this routine to provide different behavior.
+  OSSClause *RebuildOSSNodeClause(Expr *Condition, SourceLocation StartLoc,
+                                  SourceLocation LParenLoc,
+                                  SourceLocation EndLoc) {
+    return getSema().OmpSs().ActOnOmpSsNodeClause(Condition, StartLoc, LParenLoc,
+                                          EndLoc);
+}
+
   /// Build a new OmpSs 'priority' clause.
   ///
   /// By default, performs semantic analysis to build the new OmpSs clause.
@@ -12404,6 +12415,15 @@ OSSClause *TreeTransform<Derived>::TransformOSSCostClause(OSSCostClause *C) {
   if (E.isInvalid())
     return nullptr;
   return getDerived().RebuildOSSCostClause(E.get(), C->getBeginLoc(),
+                                           C->getLParenLoc(), C->getEndLoc());
+}
+
+template <typename Derived>
+OSSClause *TreeTransform<Derived>::TransformOSSNodeClause(OSSNodeClause *C) {
+  ExprResult E = getDerived().TransformExpr(C->getExpression());
+  if (E.isInvalid())f
+    return nullptr;
+  return getDerived().RebuildOSSNodeClause(E.get(), C->getBeginLoc(),
                                            C->getLParenLoc(), C->getEndLoc());
 }
 

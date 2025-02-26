@@ -6324,6 +6324,20 @@ OSSClause *SemaOmpSs::ActOnOmpSsCostClause(Expr *E,
   return new (SemaRef.Context) OSSCostClause(Res.get(), StartLoc, LParenLoc, EndLoc);
 }
 
+OSSClause *SemaOmpSs::ActOnOmpSsNodeClause(Expr *E,
+                                      SourceLocation StartLoc,
+                                      SourceLocation LParenLoc,
+                                      SourceLocation EndLoc) {
+  // The parameter of the node() clause must be >= 0
+  // expression. (OMAR: double check if this allows 0)
+  ExprResult Res = CheckNonNegativeIntegerValue(
+  E, OSSC_node, /*StrictlyPositive=*/false, /*Outline=*/false);
+  if (Res.isInvalid())
+  return nullptr;
+
+  return new (SemaRef.Context) OSSNodeClause(Res.get(), StartLoc, LParenLoc, EndLoc);
+}
+
 ExprResult SemaOmpSs::CheckSignedIntegerValue(Expr *ValExpr, bool Outline) {
   if (!ValExpr->isTypeDependent() && !ValExpr->isValueDependent() &&
       !ValExpr->isInstantiationDependent() &&
@@ -6477,6 +6491,9 @@ OSSClause *SemaOmpSs::ActOnOmpSsSingleExprClause(OmpSsClauseKind Kind, Expr *Exp
     break;
   case OSSC_cost:
     Res = ActOnOmpSsCostClause(Expr, StartLoc, LParenLoc, EndLoc);
+    break;
+  case OSSC_node:
+    Res = ActOnOmpSsNodeClause(Expr, StartLoc, LParenLoc, EndLoc);
     break;
   case OSSC_priority:
     Res = ActOnOmpSsPriorityClause(Expr, StartLoc, LParenLoc, EndLoc);
@@ -7074,6 +7091,7 @@ void SemaOmpSs::InstantiateOSSDeclareTaskAttr(
   ExprResult IfRes;
   ExprResult FinalRes;
   ExprResult CostRes;
+  ExprResult NodeRes;
   ExprResult PriorityRes;
   ExprResult ShmemRes;
   ExprResult OnreadyRes;
@@ -7177,6 +7195,9 @@ void SemaOmpSs::InstantiateOSSDeclareTaskAttr(
   if (auto *E = Attr.getCostExpr())
     CostRes = Subst(E);
 
+  if (auto *E = Attr.getNodeExpr())
+    NodeRes = Subst(E);
+
   if (auto *E = Attr.getPriorityExpr())
     PriorityRes = Subst(E);
 
@@ -7238,8 +7259,9 @@ void SemaOmpSs::InstantiateOSSDeclareTaskAttr(
     SemaRef.ConvertDeclToDeclGroup(New),
     ImmediateRes.get(), MicrotaskRes.get(),
     IfRes.get(), FinalRes.get(),
-    CostRes.get(), PriorityRes.get(),
-    ShmemRes.get(), OnreadyRes.get(), Wait,
+    CostRes.get(), NodeRes.get(), 
+    PriorityRes.get(), ShmemRes.get(), 
+    OnreadyRes.get(), Wait,
     Device, SourceLocation(),
     Labels,
     Ins, Outs, Inouts,

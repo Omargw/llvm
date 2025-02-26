@@ -227,8 +227,8 @@ public:
   DeclGroupPtrTy ActOnOmpSsDeclareTaskDirective(
       DeclGroupPtrTy DG,
       Expr *Immediate, Expr *Microtask,
-      Expr *If, Expr *Final, Expr *Cost, Expr *Priority,
-      Expr *Shmem, Expr *Onready, bool Wait,
+      Expr *If, Expr *Final, Expr *Cost, Expr *Node,
+      Expr *Priority, Expr *Shmem, Expr *Onready, bool Wait,
       unsigned Device, SourceLocation DeviceLoc,
       ArrayRef<Expr *> Labels,
       ArrayRef<Expr *> Ins, ArrayRef<Expr *> Outs, ArrayRef<Expr *> Inouts,
@@ -360,6 +360,10 @@ public:
                                    SourceLocation EndLoc);
   /// Called on well-formed 'cost' clause.
   OSSClause *ActOnOmpSsCostClause(Expr *E, SourceLocation StartLoc,
+                                  SourceLocation LParenLoc,
+                                  SourceLocation EndLoc);
+/// Called on well-formed 'node' clause.
+OSSClause *ActOnOmpSsNodeClause(Expr *E, SourceLocation StartLoc,
                                   SourceLocation LParenLoc,
                                   SourceLocation EndLoc);
   /// Called on well-formed 'priority' clause.
