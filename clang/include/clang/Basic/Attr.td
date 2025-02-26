@@ -4248,8 +4248,8 @@ def OSSTaskDecl : Attr {
   let Args = [
     ExprArgument<"ImmediateExpr">, ExprArgument<"MicrotaskExpr">,
     ExprArgument<"IfExpr">, ExprArgument<"FinalExpr">,
-    ExprArgument<"CostExpr">, ExprArgument<"PriorityExpr">,
-    ExprArgument<"ShmemExpr">,
+    ExprArgument<"CostExpr">, ExprArgument<"NodeExpr">,
+    ExprArgument<"PriorityExpr">, ExprArgument<"ShmemExpr">,
     BoolArgument<"Wait", 0>,
     EnumArgument<"Device", "DeviceType", /*is_string=*/false,
       ["smp", "cuda", "opencl", "fpga", "unknown"],
