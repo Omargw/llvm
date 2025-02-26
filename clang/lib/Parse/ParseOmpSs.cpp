@@ -113,14 +113,16 @@ static ExprResult *getSingleClause(
     OmpSsClauseKind CKind,
     ExprResult &ImmediateRes, ExprResult &MicrotaskRes,
     ExprResult &IfRes, ExprResult &FinalRes,
-    ExprResult &CostRes, ExprResult &PriorityRes,
-    ExprResult &ShmemRes, ExprResult &OnreadyRes) {
+    ExprResult &CostRes, ExprResult &NodeRes, 
+    ExprResult &PriorityRes, ExprResult &ShmemRes, 
+    ExprResult &OnreadyRes) {
 
     if (CKind == OSSC_immediate) return &ImmediateRes;
     if (CKind == OSSC_microtask) return &MicrotaskRes;
     if (CKind == OSSC_if) return &IfRes;
     if (CKind == OSSC_final) return &FinalRes;
     if (CKind == OSSC_cost) return &CostRes;
+    if (CKind == OSSC_node) return &NodeRes;
     if (CKind == OSSC_priority) return &PriorityRes;
     if (CKind == OSSC_shmem) return &ShmemRes;
     if (CKind == OSSC_onready) return &OnreadyRes;
@@ -183,7 +185,7 @@ static OmpSsClauseKind getOmpSsClauseFromDependKinds(ArrayRef<OmpSsDependClauseK
 ///    clause:
 ///       depend-clause | if-clause | final-clause
 ///       | cost-clause | priority-clause | label-clause
-///       | wait-clause
+///       | wait-clause | node-clause
 ///       | default-clause | in-clause | out-clause
 ///       | inout-clause | concurrent-clause | commutative-clause
 ///       | weakin-clause | weakout-clause | weakinout-clause
@@ -191,7 +193,7 @@ static OmpSsClauseKind getOmpSsClauseFromDependKinds(ArrayRef<OmpSsDependClauseK
 bool Parser::ParseDeclareTaskClauses(
     ExprResult &ImmediateRes, ExprResult &MicrotaskRes,
     ExprResult &IfRes, ExprResult &FinalRes,
-    ExprResult &CostRes, ExprResult &PriorityRes,
+    ExprResult &CostRes, ExprResult &NodeRes, ExprResult &PriorityRes,
     ExprResult &ShmemRes, ExprResult &OnreadyRes, bool &Wait,
     unsigned &Device, SourceLocation &DeviceLoc,
     SmallVectorImpl<Expr *> &Labels,
@@ -250,6 +252,7 @@ bool Parser::ParseDeclareTaskClauses(
     case OSSC_if:
     case OSSC_final:
     case OSSC_cost:
+    case OSSC_node:
     case OSSC_priority:
     case OSSC_shmem:
     case OSSC_onready: {
@@ -262,7 +265,7 @@ bool Parser::ParseDeclareTaskClauses(
       SourceLocation RLoc;
       SingleClause = getSingleClause(
         CKind, ImmediateRes, MicrotaskRes, IfRes, FinalRes,
-        CostRes, PriorityRes, ShmemRes, OnreadyRes);
+        CostRes, NodeRes, PriorityRes, ShmemRes, OnreadyRes);
       *SingleClause = ParseOmpSsParensExpr(getOmpSsClauseName(CKind), RLoc);
 
       if (SingleClause->isInvalid())
@@ -444,6 +447,7 @@ Parser::ParseOSSDeclareTaskClauses(Parser::DeclGroupPtrTy Ptr,
   ExprResult IfRes;
   ExprResult FinalRes;
   ExprResult CostRes;
+  ExprResult NodeRes;
   ExprResult PriorityRes;
   ExprResult ShmemRes;
   ExprResult OnreadyRes;
@@ -484,7 +488,7 @@ Parser::ParseOSSDeclareTaskClauses(Parser::DeclGroupPtrTy Ptr,
   bool IsError =
       ParseDeclareTaskClauses(ImmediateRes, MicrotaskRes,
                               IfRes, FinalRes,
-                              CostRes, PriorityRes,
+                              CostRes, NodeRes, PriorityRes,
                               ShmemRes, OnreadyRes, Wait,
                               Device, DeviceLoc,
                               Labels,
@@ -514,7 +518,7 @@ Parser::ParseOSSDeclareTaskClauses(Parser::DeclGroupPtrTy Ptr,
       Ptr,
       ImmediateRes.get(), MicrotaskRes.get(),
       IfRes.get(), FinalRes.get(),
-      CostRes.get(), PriorityRes.get(),
+      CostRes.get(), NodeRes.get(), PriorityRes.get(),
       ShmemRes.get(), OnreadyRes.get(), Wait,
       Device, DeviceLoc,
       Labels,
@@ -953,7 +957,7 @@ Parser::OSSClauseList Parser::ParseOmpSsClauses(OmpSsDirectiveKind DKind, Source
 ///    clause:
 ///       depend-clause | if-clause | final-clause
 ///       | cost-clause | priority-clause | label-clause
-///       | wait-clause
+///       | wait-clause | node-clause
 ///       | default-clause | shared-clause | private-clause
 ///       | firstprivate-clause | in-clause | out-clause
 ///       | inout-clause | weakin-clause | weakout-clause
@@ -978,6 +982,7 @@ OSSClause *Parser::ParseOmpSsClause(OmpSsDirectiveKind DKind,
   case OSSC_if:
   case OSSC_final:
   case OSSC_cost:
+  case OSSC_node:
   case OSSC_priority:
   case OSSC_shmem:
   case OSSC_onready:
