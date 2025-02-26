@@ -4202,6 +4202,12 @@ bool RecursiveASTVisitor<Derived>::VisitOSSCostClause(OSSCostClause *C) {
 }
 
 template <typename Derived>
+bool RecursiveASTVisitor<Derived>::VisitOSSNodeClause(OSSNodeClause *C) {
+  TRY_TO(TraverseStmt(C->getExpression()));
+  return true;
+}
+
+template <typename Derived>
 bool RecursiveASTVisitor<Derived>::VisitOSSPriorityClause(OSSPriorityClause *C) {
   TRY_TO(TraverseStmt(C->getExpression()));
   return true;

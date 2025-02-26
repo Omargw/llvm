@@ -510,6 +510,57 @@ public:
   }
 };
 
+/// This represents 'node' clause in the '#pragma oss ...' directive.
+///
+/// \code
+/// #pragma oss task node(foo(N))
+/// \endcode
+/// In this example directive '#pragma oss task' has simple 'node'
+/// clause with expression 'foo(N)'.
+class OSSNodeClause : public OSSClause {
+  friend class OSSClauseReader;
+
+  /// Location of '('.
+  SourceLocation LParenLoc;
+
+  /// Expression of the 'node' clause.node
+  Stmt *Expression = nullptr;
+
+  /// Set expression.
+  void setExpression(Expr *E) { Expression = E; }
+
+public:
+  /// Build 'node' clause with expression \a E.
+  ///
+  /// \param StartLoc Starting location of the clause.
+  /// \param LParenLoc Location of '('.
+  /// \param E Expression of the clause.
+  /// \param EndLoc Ending location of the clause.
+  OSSNodeClause(Expr *E, SourceLocation StartLoc, SourceLocation LParenLoc,
+                SourceLocation EndLoc)
+      : OSSClause(llvm::oss::OSSC_node, StartLoc, EndLoc), LParenLoc(LParenLoc),
+        Expression(E) {}
+
+  /// Build an empty clause.
+  OSSNodeClause()
+      : OSSClause(llvm::oss::OSSC_node, SourceLocation(), SourceLocation()) {}
+
+  /// Sets the location of '('.
+  void setLParenLoc(SourceLocation Loc) { LParenLoc = Loc; }
+
+  /// Returns the location of '('.
+  SourceLocation getLParenLoc() const { return LParenLoc; }
+
+  /// Returns expression.
+  Expr *getExpression() const { return cast_or_null<Expr>(Expression); }
+
+  child_range children() { return child_range(&Expression, &Expression + 1); }
+
+  static bool classof(const OSSClause *T) {
+    return T->getClauseKind() == llvm::oss::OSSC_node;
+  }
+};
+
 /// This represents 'priority' clause in the '#pragma oss ...' directive.
 ///
 /// \code
