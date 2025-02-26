@@ -264,7 +264,7 @@ void OSSClausePrinter::VisitOSSCostClause(OSSCostClause *Node) {
   OS << ")";
 }
 
-void OSSClausePrinter::VisitOSSNodeClause(OSSCostClause *Node) {
+void OSSClausePrinter::VisitOSSNodeClause(OSSNodeClause *Node) {
   OS << "node(";
   Node->getExpression()->printPretty(OS, nullptr, Policy, 0);
   OS << ")";
