@@ -59,6 +59,7 @@ enum OmpSsBundleKind {
   OSSB_if,
   OSSB_final,
   OSSB_cost,
+  OSSB_node,
   OSSB_priority,
   OSSB_label,
   OSSB_chunksize,
@@ -151,6 +152,8 @@ const char *getBundleStr(OmpSsBundleKind Kind) {
     return "QUAL.OSS.FINAL";
   case OSSB_cost:
     return "QUAL.OSS.COST";
+  case OSSB_node:
+    return "QUAL.OSS.NODE";
   case OSSB_priority:
     return "QUAL.OSS.PRIORITY";
   case OSSB_label:
@@ -2717,6 +2720,10 @@ void CGOmpSsRuntime::EmitDirectiveData(
     EmitScalarWrapperCallBundle(
       getBundleStr(OSSB_cost), "compute_cost", CGF, Data.Cost, TaskInfo);
   }
+  if (Data.Node) {
+    EmitScalarWrapperCallBundle(
+      getBundleStr(OSSB_node), "compute_node", CGF, Data.Node, TaskInfo);
+  }
   if (Data.Priority) {
     EmitScalarWrapperCallBundle(
       getBundleStr(OSSB_priority), "compute_priority", CGF, Data.Priority, TaskInfo);
@@ -3177,6 +3184,10 @@ RValue CGOmpSsRuntime::emitTaskFunction(CodeGenFunction &CGF,
     if (const Expr *E = Attr->getCostExpr()) {
       EmitScalarWrapperCallBundle(
         getBundleStr(OSSB_cost), "compute_cost", CGF, E, TaskInfo);
+    }
+    if (const Expr *E = Attr->getNodeExpr()) {
+      EmitScalarWrapperCallBundle(
+        getBundleStr(OSSB_node), "compute_node", CGF, E, TaskInfo);
     }
     if (const Expr *E = Attr->getPriorityExpr()) {
       EmitScalarWrapperCallBundle(
