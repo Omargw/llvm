@@ -2487,6 +2487,7 @@ StmtResult SemaOmpSs::ActOnOmpSsTaskLoopDirective(
                isa<OSSMicrotaskClause>(Clause) ||
                isa<OSSFinalClause>(Clause) ||
                isa<OSSCostClause>(Clause) ||
+               isa<OSSNodeClause>(Clause) ||
                isa<OSSPriorityClause>(Clause) ||
                isa<OSSOnreadyClause>(Clause) ||
                isa<OSSChunksizeClause>(Clause) ||
@@ -4488,7 +4489,7 @@ static bool verifyOmpSsDeclareTaskReturnType(Sema &S, FunctionDecl *FD) {
 SemaOmpSs::DeclGroupPtrTy SemaOmpSs::ActOnOmpSsDeclareTaskDirective(
     DeclGroupPtrTy DG,
     Expr *Immediate, Expr *Microtask,
-    Expr *If, Expr *Final, Expr *Cost, Expr *Priority,
+    Expr *If, Expr *Final, Expr *Cost, Expr *Node, Expr *Priority,
     Expr *Shmem, Expr *Onready, bool Wait,
     unsigned Device, SourceLocation DeviceLoc,
     ArrayRef<Expr *> Labels,
@@ -4573,7 +4574,7 @@ SemaOmpSs::DeclGroupPtrTy SemaOmpSs::ActOnOmpSsDeclareTaskDirective(
   ADecl->addAttr(OSSTaskDeclSentinelAttr::CreateImplicit(SemaRef.Context, SR));
 
   ExprResult ImmediateRes, MicrotaskRes;
-  ExprResult IfRes, FinalRes, CostRes, PriorityRes, ShmemRes, OnreadyRes;
+  ExprResult IfRes, FinalRes, CostRes, NodeRes, PriorityRes, ShmemRes, OnreadyRes;
   SmallVector<Expr *, 2> LabelsRes;
   SmallVector<Expr *, 4> NdrangesRes;
   OSSTaskDeclAttr::DeviceType DevType = OSSTaskDeclAttr::DeviceType::Unknown;
@@ -4592,6 +4593,11 @@ SemaOmpSs::DeclGroupPtrTy SemaOmpSs::ActOnOmpSsDeclareTaskDirective(
   if (Cost) {
     CostRes = CheckNonNegativeIntegerValue(
       Cost, OSSC_cost, /*StrictlyPositive=*/false, /*Outline=*/true);
+  }
+  if(Node) {
+    // (OMAR: double check if this allows 0)
+    NodeRes = CheckNonNegativeIntegerValue(
+      Node, OSSC_node, /*StrictlyPositive=*/false, /*Outline=*/true);
   }
   if (Priority) {
     PriorityRes = CheckSignedIntegerValue(Priority, /*Outline=*/true);
@@ -4763,7 +4769,8 @@ SemaOmpSs::DeclGroupPtrTy SemaOmpSs::ActOnOmpSsDeclareTaskDirective(
   auto *NewAttr = OSSTaskDeclAttr::CreateImplicit(
     SemaRef.Context,
     ImmediateRes.get(), MicrotaskRes.get(),
-    IfRes.get(), FinalRes.get(), CostRes.get(), PriorityRes.get(),
+    IfRes.get(), FinalRes.get(), CostRes.get(), 
+    NodeRes.get(), PriorityRes.get(),
     ShmemRes.get(), Wait, DevType,
     OnreadyRes.get(),
     const_cast<Expr **>(LabelsRes.data()), LabelsRes.size(),

@@ -12421,7 +12421,7 @@ OSSClause *TreeTransform<Derived>::TransformOSSCostClause(OSSCostClause *C) {
 template <typename Derived>
 OSSClause *TreeTransform<Derived>::TransformOSSNodeClause(OSSNodeClause *C) {
   ExprResult E = getDerived().TransformExpr(C->getExpression());
-  if (E.isInvalid())f
+  if (E.isInvalid())
     return nullptr;
   return getDerived().RebuildOSSNodeClause(E.get(), C->getBeginLoc(),
                                            C->getLParenLoc(), C->getEndLoc());
