@@ -187,6 +187,11 @@ void OSSTaskDeclAttr::printPrettyPragma(
     E->printPretty(OS, nullptr, Policy);
     OS << ")";
   }
+  if (auto *E = getNodeExpr()) {
+    OS << " node(";
+    E->printPretty(OS, nullptr, Policy);
+    OS << ")";
+  }
   if (auto *E = getPriorityExpr()) {
     OS << " priority(";
     E->printPretty(OS, nullptr, Policy);
