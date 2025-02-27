@@ -161,6 +161,15 @@ static void AddCostData(const OSSExecutableDirective &S, const Expr * &CostExpr)
   }
 }
 
+static void AddNodeData(const OSSExecutableDirective &S, const Expr * &NodeExpr) {
+  bool Found = false;
+  for (const auto *C : S.getClausesOfKind<OSSNodeClause>()) {
+    assert(!Found);
+    Found = true;
+    NodeExpr = C->getExpression();
+  }
+}
+
 static void AddPriorityData(const OSSExecutableDirective &S, const Expr * &PriorityExpr) {
   bool Found = false;
   for (const auto *C : S.getClausesOfKind<OSSPriorityClause>()) {
@@ -241,6 +250,7 @@ static void AddTaskData(const OSSExecutableDirective &S, OSSTaskDataTy &TaskData
   AddIfData(S, TaskData.If);
   AddFinalData(S, TaskData.Final);
   AddCostData(S, TaskData.Cost);
+  AddNodeData(S, TaskData.Node);
   AddPriorityData(S, TaskData.Priority);
   AddLabelData(S, TaskData.Labels);
   AddWaitData(S, TaskData.Wait);
