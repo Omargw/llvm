@@ -52,6 +52,7 @@ class Nanos6TaskConstraints {
 private:
   StructType *Ty;
   Type *CostTy;
+  Type *StreamTy;
   Type *NodeTy;
 
   Nanos6TaskConstraints(){};
@@ -62,6 +63,7 @@ public:
   static Nanos6TaskConstraints& getInstance(Module &M);
   StructType *getType() const { return Ty; }
   Type *getCostType() const { return CostTy; }
+  Type *getStreamType() const { return StreamTy; }
   Type *getNodeType() const { return NodeTy; }
 };
 

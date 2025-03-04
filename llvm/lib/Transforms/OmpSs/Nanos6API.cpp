@@ -62,11 +62,14 @@ Nanos6TaskConstraints& Nanos6TaskConstraints::getInstance(Module &M) {
 
     // size_t cost
     instance->CostTy = Type::getInt64Ty(M.getContext());
-    // size_t node
-    instance->NodeTy = Type::getInt64Ty(M.getContext());
+    // size_t stream
+    instance->StreamTy = Type::getInt64Ty(M.getContext());
+    // int node
+    instance->NodeTy = Type::getInt32Ty(M.getContext());
 
     instance->Ty->setBody({
       instance->CostTy,
+      instance->StreamTy,
       instance->NodeTy
     });
   }
