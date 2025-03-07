@@ -4595,9 +4595,11 @@ SemaOmpSs::DeclGroupPtrTy SemaOmpSs::ActOnOmpSsDeclareTaskDirective(
       Cost, OSSC_cost, /*StrictlyPositive=*/false, /*Outline=*/true);
   }
   if(Node) {
-    // (OMAR: double check if this allows 0)
-    NodeRes = CheckNonNegativeIntegerValue(
-      Node, OSSC_node, /*StrictlyPositive=*/false, /*Outline=*/true);
+    // Node clause can be of signed value, so no need to check for negative
+    // as in the cost case.
+    SourceLocation Loc = Node->getExprLoc();
+    ExprResult Value = PerformOmpSsImplicitIntegerConversion(Loc, Node);
+    NodeRes = Value.get();
   }
   if (Priority) {
     PriorityRes = CheckSignedIntegerValue(Priority, /*Outline=*/true);
@@ -6335,12 +6337,9 @@ OSSClause *SemaOmpSs::ActOnOmpSsNodeClause(Expr *E,
                                       SourceLocation StartLoc,
                                       SourceLocation LParenLoc,
                                       SourceLocation EndLoc) {
-  // The parameter of the node() clause must be >= 0
-  // expression. (OMAR: double check if this allows 0)
-  ExprResult Res = CheckNonNegativeIntegerValue(
-  E, OSSC_node, /*StrictlyPositive=*/false, /*Outline=*/false);
-  if (Res.isInvalid())
-  return nullptr;
+  // The parameter of the node() clause can be signed expression.
+  SourceLocation Loc = E->getExprLoc();
+  ExprResult Res = PerformOmpSsImplicitIntegerConversion(Loc, E);
 
   return new (SemaRef.Context) OSSNodeClause(Res.get(), StartLoc, LParenLoc, EndLoc);
 }
