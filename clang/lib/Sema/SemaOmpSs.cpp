@@ -964,7 +964,7 @@ void SemaOmpSs::ActOnOmpSsAfterClauseGathering(SmallVectorImpl<OSSClause *>& Cla
   // but as we find cost before we register firstprivate
   for (auto *Clause : Clauses) {
     if (isa<OSSCostClause>(Clause) || isa<OSSPriorityClause>(Clause)
-        || isa<OSSOnreadyClause>(Clause)) {
+        || isa<OSSOnreadyClause>(Clause) || isa<OSSNodeClause>(Clause)) {
       DSAAttrChecker DSAChecker(DSAStack, SemaRef);
       DSAChecker.VisitOSSClause(Clause);
       // FIXME: how to handle an error?
