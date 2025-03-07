@@ -965,53 +965,46 @@ struct OmpSsDirective {
     RetInst->insertInto(&Entry, Entry.end());
     IRBuilder<> BBBuilder(&UnpackFunc->getEntryBlock().back());
     Value *Constraints = &*(UnpackFunc->arg_end() - 1);
-    Value *Idx[2];
-    Idx[0] = Constant::getNullValue(Int32Ty);
-    Idx[1] = Constant::getNullValue(Int32Ty);
 
-    Value *GEPConstraints =
-        BBBuilder.CreateGEP(nanos6Api::Nanos6TaskConstraints::getInstance(M).getType(),
-                            Constraints, Idx, "gep_" + Constraints->getName());
-    Value *Cost = BBBuilder.CreateCall(CostInfo.Fun, CostInfo.Args);
-    Value *CostCast = BBBuilder.CreateZExt(Cost, nanos6Api::Nanos6TaskConstraints::getInstance(M).getCostType());
-    BBBuilder.CreateStore(CostCast, GEPConstraints);
-    for (Instruction &I : Entry) {
-      Function::arg_iterator AI = UnpackFunc->arg_begin();
-      for (auto It = StructToIdxMap.begin();
-             It != StructToIdxMap.end(); ++It, ++AI) {
-        if (isReplaceableValue(It->first))
-          I.replaceUsesOfWith(It->first, &*AI);
+    // Cost clause
+    if(CostInfo.Fun) {
+      Value *Idx[2];
+      Idx[0] = Constant::getNullValue(Int32Ty);
+      Idx[1] = Constant::getNullValue(Int32Ty);
+
+      Value *GEPConstraints =
+          BBBuilder.CreateGEP(nanos6Api::Nanos6TaskConstraints::getInstance(M).getType(),
+                              Constraints, Idx, "gep_" + Constraints->getName());
+      Value *Cost = BBBuilder.CreateCall(CostInfo.Fun, CostInfo.Args);
+
+      Value *CostCast = BBBuilder.CreateZExt(Cost, nanos6Api::Nanos6TaskConstraints::getInstance(M).getCostType());
+      BBBuilder.CreateStore(CostCast, GEPConstraints);
+    }
+
+    // Node clause
+    if(NodeInfo.Fun) {
+      Value *IdxNode[2];
+      IdxNode[0] = Constant::getNullValue(Int32Ty);
+      IdxNode[1] = ConstantInt::get(Int32Ty, 2);  // Now accessing the second field
+      Value *GEPNode =
+          BBBuilder.CreateGEP(nanos6Api::Nanos6TaskConstraints::getInstance(M).getType(),
+                              Constraints, IdxNode, "gep_" + Constraints->getName());
+      Value *Node = BBBuilder.CreateCall(NodeInfo.Fun, NodeInfo.Args);
+      Value *NodeCast = BBBuilder.CreateZExt(Node, nanos6Api::Nanos6TaskConstraints::getInstance(M).getNodeType());
+      BBBuilder.CreateStore(NodeCast, GEPNode);
+    }
+
+    if(CostInfo.Fun || NodeInfo.Fun) {
+      for (Instruction &I : Entry) {
+        Function::arg_iterator AI = UnpackFunc->arg_begin();
+        for (auto It = StructToIdxMap.begin();
+               It != StructToIdxMap.end(); ++It, ++AI) {
+          if (isReplaceableValue(It->first))
+            I.replaceUsesOfWith(It->first, &*AI);
+        }
       }
     }
   }
-
-  void unpackNodeAndRewrite(
-    Function *UnpackFunc, const MapVector<Value *, size_t> &StructToIdxMap) {
-  BasicBlock::Create(Ctx, "entry", UnpackFunc);
-  BasicBlock &Entry = UnpackFunc->getEntryBlock();
-  Instruction *RetInst = ReturnInst::Create(Ctx);
-  RetInst->insertInto(&Entry, Entry.end());
-  IRBuilder<> BBBuilder(&UnpackFunc->getEntryBlock().back());
-  Value *Constraints = &*(UnpackFunc->arg_end() - 1);
-  Value *Idx[2];
-  Idx[0] = Constant::getNullValue(Int32Ty);
-  Idx[1] = Constant::getNullValue(Int32Ty);
-
-  Value *GEPConstraints =
-      BBBuilder.CreateGEP(nanos6Api::Nanos6TaskConstraints::getInstance(M).getType(),
-                          Constraints, Idx, "gep_" + Constraints->getName());
-  Value *Node = BBBuilder.CreateCall(NodeInfo.Fun, NodeInfo.Args);
-  Value *NodeCast = BBBuilder.CreateZExt(Node, nanos6Api::Nanos6TaskConstraints::getInstance(M).getCostType());
-  BBBuilder.CreateStore(NodeCast, GEPConstraints);
-  for (Instruction &I : Entry) {
-    Function::arg_iterator AI = UnpackFunc->arg_begin();
-    for (auto It = StructToIdxMap.begin();
-           It != StructToIdxMap.end(); ++It, ++AI) {
-      if (isReplaceableValue(It->first))
-        I.replaceUsesOfWith(It->first, &*AI);
-    }
-  }
-}
 
   void unpackPriorityAndRewrite(
       Function *UnpackFunc, const MapVector<Value *, size_t> &StructToIdxMap) {
@@ -2034,8 +2027,7 @@ struct OmpSsDirective {
       const MapVector<Value *, size_t> &TaskArgsToStructIdxMap,
       StructType *TaskArgsTy, ArrayRef<Type *> TaskTypeList,
       ArrayRef<StringRef> TaskNameList) {
-
-    if (!CostInfo.Fun)
+    if (!CostInfo.Fun  && !NodeInfo.Fun)
       return nullptr;
 
     SmallVector<Type *, 4> TaskExtraTypeList;
@@ -2048,6 +2040,7 @@ struct OmpSsDirective {
     Function *UnpackConstraintsFuncVar = createUnpackOlFunction(("nanos6_unpacked_constraints_" + F.getName()).str(),
                                TaskTypeList, TaskNameList,
                                TaskExtraTypeList, TaskExtraNameList);
+
     unpackCostAndRewrite(UnpackConstraintsFuncVar, TaskArgsToStructIdxMap);
 
     Function *OlConstraintsFuncVar
