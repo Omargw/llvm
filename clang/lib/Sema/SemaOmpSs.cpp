@@ -6563,6 +6563,9 @@ OSSClause *SemaOmpSs::ActOnOmpSsClause(OmpSsClauseKind Kind,
   case OSSC_relaxed:
     Res = ActOnOmpSsRelaxedClause(StartLoc, EndLoc);
     break;
+  case OSSC_noflush:
+    Res = ActOnOmpSsNoflushClause(StartLoc, EndLoc);
+    break;
   default:
     llvm_unreachable("Clause is not allowed.");
   }
@@ -6622,6 +6625,11 @@ OSSClause *SemaOmpSs::ActOnOmpSsReleaseClause(SourceLocation StartLoc,
 OSSClause *SemaOmpSs::ActOnOmpSsRelaxedClause(SourceLocation StartLoc,
                                           SourceLocation EndLoc) {
   return new (SemaRef.Context) OSSRelaxedClause(StartLoc, EndLoc);
+}
+
+OSSClause *SemaOmpSs::ActOnOmpSsNoflushClause(SourceLocation StartLoc,
+                                          SourceLocation EndLoc) {
+return new (SemaRef.Context) OSSNoflushClause(StartLoc, EndLoc);
 }
 
 ExprResult SemaOmpSs::ActOnOSSArraySectionExpr(Expr *Base, SourceLocation LBLoc,

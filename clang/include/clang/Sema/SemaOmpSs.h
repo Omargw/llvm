@@ -436,6 +436,9 @@ OSSClause *ActOnOmpSsNodeClause(Expr *E, SourceLocation StartLoc,
   /// Called on well-formed 'relaxed' clause.
   OSSClause *ActOnOmpSsRelaxedClause(SourceLocation StartLoc,
                                      SourceLocation EndLoc);
+
+  OSSClause *ActOnOmpSsNoflushClause(SourceLocation StartLoc,
+                                    SourceLocation EndLoc);
 private:
   void *VarDataSharingAttributesStackOmpSs;
 

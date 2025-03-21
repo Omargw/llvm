@@ -277,7 +277,9 @@ struct DirectiveEnvironment {
   int ReductionIndex = 0;
   // Map of Dependency symbols to Index
   std::map<Value *, int> DepSymToIdx;
-
+  // Identify of a taskwait has a noflush
+  bool hasNoflush = false;
+  
   // returns if V is in DSAInfo
   bool valueInDSABundles(Value *V) const {
     if (!DSAInfo.Shared.count(V)
@@ -433,6 +435,10 @@ public:
   // returns if directive is taskwait
   bool isOmpSsTaskwaitDirective() const {
     return DirectiveKind == OSSD_taskwait;
+  }
+
+  bool isOmpSsTaskwaitNoflushDirective() const {
+    return hasNoflush;
   }
 };
 

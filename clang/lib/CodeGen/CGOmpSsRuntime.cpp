@@ -52,6 +52,7 @@ enum OmpSsBundleKind {
   OSSB_taskloop,
   OSSB_taskloop_for,
   OSSB_taskwait,
+  OSSB_taskwait_noflush,
   OSSB_release,
   OSSB_shared,
   OSSB_private,
@@ -138,6 +139,8 @@ const char *getBundleStr(OmpSsBundleKind Kind) {
     return "TASKLOOP.FOR";
   case OSSB_taskwait:
     return "TASKWAIT";
+  case OSSB_taskwait_noflush:
+    return "TASKWAIT.NOFLUSH";
   case OSSB_release:
     return "RELEASE";
   case OSSB_shared:
@@ -2398,11 +2401,22 @@ void CGOmpSsRuntime::EmitReduction(
 
 void CGOmpSsRuntime::emitTaskwaitCall(CodeGenFunction &CGF,
                                       SourceLocation Loc,
-                                      const OSSTaskDataTy &Data) {
+                                      const OSSTaskDataTy &Data,
+                                      bool hasNoflush) {
   if (Data.empty()) {
     // Regular taskwait
     llvm::Function *Callee = CGM.getIntrinsic(llvm::Intrinsic::directive_marker);
-    CGF.Builder.CreateCall(
+    if(hasNoflush) {
+      CGF.Builder.CreateCall(
+        Callee, {},
+        {
+          llvm::OperandBundleDef(
+            std::string(getBundleStr(OSSB_directive)),
+            llvm::ConstantDataArray::getString(
+              CGM.getLLVMContext(), getBundleStr(OSSB_taskwait_noflush)))
+        });
+    } else {
+      CGF.Builder.CreateCall(
         Callee, {},
         {
           llvm::OperandBundleDef(
@@ -2410,6 +2424,7 @@ void CGOmpSsRuntime::emitTaskwaitCall(CodeGenFunction &CGF,
             llvm::ConstantDataArray::getString(
               CGM.getLLVMContext(), getBundleStr(OSSB_taskwait)))
         });
+    }
   } else {
     // taskwait with deps -> task with deps if(0)
     llvm::Function *EntryCallee = CGM.getIntrinsic(llvm::Intrinsic::directive_region_entry);

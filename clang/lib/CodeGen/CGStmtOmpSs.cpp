@@ -306,7 +306,17 @@ void CodeGenFunction::EmitOSSTaskwaitDirective(const OSSTaskwaitDirective &S) {
 
   AddDSAData(S, Data.DSAs);
   AddDepData(S, Data.Deps);
-  CGM.getOmpSsRuntime().emitTaskwaitCall(*this, S.getBeginLoc(), Data);
+
+  // Check for the noflush clause
+  bool HasNoflush = false;
+  for (const OSSClause *C : S.clauses()) {
+    if (isa<OSSNoflushClause>(C)) {
+      HasNoflush = true;
+      break;
+    }
+  }
+
+  CGM.getOmpSsRuntime().emitTaskwaitCall(*this, S.getBeginLoc(), Data, HasNoflush);
 }
 
 void CodeGenFunction::EmitOSSReleaseDirective(const OSSReleaseDirective &S) {

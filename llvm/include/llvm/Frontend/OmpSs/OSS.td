@@ -186,6 +186,9 @@ def OSSC_Release : Clause<"release"> {
 def OSSC_Relaxed : Clause<"relaxed"> {
   let clangClass = "OSSRelaxedClause";
 }
+def OSSC_Noflush : Clause<"noflush"> {
+  let clangClass = "OSSNoflushClause";
+}
 def OSSC_Unknown : Clause<"unknown"> {
   let isImplicit = true;
   let isDefault = true;
@@ -270,6 +273,7 @@ def OSS_TaskWait : Directive<"taskwait"> {
     VersionedClause<OSSC_In>,
     VersionedClause<OSSC_Out>,
     VersionedClause<OSSC_Inout>,
+    VersionedClause<OSSC_Noflush>,
   ];
   let association = AS_None;
   let category = CA_Executable;

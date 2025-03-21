@@ -118,6 +118,7 @@ struct OSSTaskDataTy final {
   SmallVector<const Expr *, 2> Labels;
   bool Wait = false;
   const Expr *Onready = nullptr;
+  bool NoFlush = false;
 
   bool empty() const {
     return DSAs.empty() && Deps.empty() &&
@@ -339,7 +340,8 @@ public:
   /// Emit code for 'taskwait' directive.
   virtual void emitTaskwaitCall(CodeGenFunction &CGF,
                                 SourceLocation Loc,
-                                const OSSTaskDataTy &Data);
+                                const OSSTaskDataTy &Data,
+                                bool HasNoflush = false);
   /// Emit code for 'release' directive.
   virtual void emitReleaseCall(
     CodeGenFunction &CGF, SourceLocation Loc, const OSSTaskDataTy &Data);

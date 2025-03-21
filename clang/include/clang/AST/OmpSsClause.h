@@ -459,6 +459,33 @@ public:
   }
 };
 
+/// This represents 'noflush' clause in the '#pragma oss taskwait ...' directive.
+///
+/// \code
+/// #pragma oss taskwait noflush
+/// \endcode
+/// In this example directive '#pragma oss taskwait' has simple 'noflush'.
+class OSSNoflushClause : public OSSClause {
+  friend class OSSClauseReader;
+
+public:
+  /// Build 'noflush' clause.
+  ///
+  /// \param StartLoc Starting location of the clause.
+  /// \param EndLoc Ending location of the clause.
+  OSSNoflushClause(SourceLocation StartLoc, SourceLocation EndLoc)
+      : OSSClause(llvm::oss::OSSC_noflush, StartLoc, EndLoc)
+      {}
+
+  /// Build an empty clause.
+  OSSNoflushClause()
+      : OSSClause(llvm::oss::OSSC_noflush, SourceLocation(), SourceLocation()) {}
+
+  static bool classof(const OSSClause *T) {
+    return T->getClauseKind() == llvm::oss::OSSC_noflush;
+  }
+};
+
 /// This represents 'cost' clause in the '#pragma oss ...' directive.
 ///
 /// \code

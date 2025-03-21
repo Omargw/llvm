@@ -131,6 +131,10 @@ void DirectiveEnvironment::gatherDirInfo(OperandBundleDef &OB) {
     DirectiveKind = OSSD_taskloop_for;
   else if (DirectiveKindStringRef == "TASKWAIT")
     DirectiveKind = OSSD_taskwait;
+  else if (DirectiveKindStringRef == "TASKWAIT.NOFLUSH") {
+    DirectiveKind = OSSD_taskwait;
+    hasNoflush = true;
+  }
   else if (DirectiveKindStringRef == "RELEASE")
     DirectiveKind = OSSD_release;
   else

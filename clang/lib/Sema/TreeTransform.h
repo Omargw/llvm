@@ -12729,6 +12729,14 @@ TreeTransform<Derived>::TransformOSSRelaxedClause(OSSRelaxedClause *C) {
   return C;
 }
 
+template <typename Derived>
+OSSClause *
+TreeTransform<Derived>::TransformOSSNoflushClause(OSSNoflushClause *C) {
+  // No need to rebuild this clause, no template-dependent parameters.
+  return C;
+}
+
+
 //===----------------------------------------------------------------------===//
 // Expression transformation
 //===----------------------------------------------------------------------===//

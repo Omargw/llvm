@@ -4230,6 +4230,11 @@ bool RecursiveASTVisitor<Derived>::VisitOSSUpdateClause(OSSUpdateClause *) {
 }
 
 template <typename Derived>
+bool RecursiveASTVisitor<Derived>::VisitOSSNoflushClause(OSSNoflushClause *) {
+  return true;
+}
+
+template <typename Derived>
 bool RecursiveASTVisitor<Derived>::VisitOSSShmemClause(OSSShmemClause *C) {
   TRY_TO(TraverseStmt(C->getExpression()));
   return true;

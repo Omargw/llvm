@@ -1826,11 +1826,18 @@ struct OmpSsDirective {
     }
   }
 
-  void lowerTaskwait() {
+  void lowerTaskwait(bool hasNoFlush) {
     // 1. Create Taskwait function Type
     IRBuilder<> IRB(DirInfo.Entry);
-    FunctionCallee Func = M.getOrInsertFunction(
-        "nanos6_taskwait", IRB.getVoidTy(), PtrTy);
+
+    FunctionCallee Func;
+    if(hasNoFlush) {
+      Func = M.getOrInsertFunction(
+        "nanos6_taskwait_noflush", IRB.getVoidTy(), PtrTy);
+    } else {
+      Func = M.getOrInsertFunction(
+          "nanos6_taskwait", IRB.getVoidTy(), PtrTy);
+    }
     // 2. Build String
     unsigned Line = 0;
     unsigned Col = 0;
@@ -3213,8 +3220,13 @@ struct OmpSsDirective {
 
   bool run() {
     lowerFinalCode();
-    if (DirEnv.isOmpSsTaskwaitDirective())
-      lowerTaskwait();
+    if (DirEnv.isOmpSsTaskwaitDirective()) {
+      if(DirEnv.isOmpSsTaskwaitNoflushDirective())
+        lowerTaskwait(true);
+      else
+        lowerTaskwait(false);
+    }
+
     else if (DirEnv.isOmpSsReleaseDirective())
       lowerRelease();
     else if (DirEnv.isOmpSsTaskDirective())

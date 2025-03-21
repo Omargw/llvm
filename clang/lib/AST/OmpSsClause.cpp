@@ -450,3 +450,7 @@ void OSSClausePrinter::VisitOSSReleaseClause(OSSReleaseClause *Node) {
 void OSSClausePrinter::VisitOSSRelaxedClause(OSSRelaxedClause *Node) {
   OS << "relaxed";
 }
+
+void OSSClausePrinter::VisitOSSNoflushClause(OSSNoflushClause *Node) {
+  OS << "noflush";
+}
