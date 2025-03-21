@@ -2440,9 +2440,6 @@ StmtResult SemaOmpSs::ActOnOmpSsTaskIterDirective(
     ArrayRef<OSSClause *> Clauses, Stmt *AStmt,
     SourceLocation StartLoc, SourceLocation EndLoc) {
   ASTContext &Context = getASTContext();
-  if (getLangOpts().OmpSsRuntimeName != std::string("libnodes"))
-    Diag(StartLoc, diag::err_oss_runtime_unsupported)
-        << getLangOpts().OmpSsRuntimeName << getOmpSsDirectiveName(OSSD_taskiter);
 
   if (!AStmt)
     return StmtError();
