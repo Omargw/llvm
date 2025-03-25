@@ -67,6 +67,7 @@ enum OmpSsBundleKind {
   OSSB_grainsize,
   OSSB_unroll,
   OSSB_wait,
+  OSSB_nowait,
   OSSB_update,
   OSSB_device,
   OSSB_device_ndrange,
@@ -169,6 +170,8 @@ const char *getBundleStr(OmpSsBundleKind Kind) {
     return "QUAL.OSS.LOOP.UNROLL";
   case OSSB_wait:
     return "QUAL.OSS.WAIT";
+  case OSSB_nowait:
+    return "QUAL.OSS.NOWAIT";
   case OSSB_update:
     return "QUAL.OSS.LOOP.UPDATE";
   case OSSB_device:
@@ -2754,6 +2757,11 @@ void CGOmpSsRuntime::EmitDirectiveData(
         getBundleStr(OSSB_wait),
         llvm::ConstantInt::getTrue(CGM.getLLVMContext()));
   }
+  if (Data.NoWait) {
+    TaskInfo.emplace_back(
+        getBundleStr(OSSB_nowait),
+        llvm::ConstantInt::getTrue(CGM.getLLVMContext()));
+  }
   if (Data.Onready) {
     EmitIgnoredWrapperCallBundle(
       getBundleStr(OSSB_onready), "compute_onready", CGF, Data.Onready, TaskInfo);
@@ -3217,7 +3225,11 @@ RValue CGOmpSsRuntime::emitTaskFunction(CodeGenFunction &CGF,
           getBundleStr(OSSB_wait),
           llvm::ConstantInt::getTrue(CGM.getLLVMContext()));
     }
-
+    if (Attr->getNoWait()) {
+      TaskInfo.emplace_back(
+          getBundleStr(OSSB_nowait),
+          llvm::ConstantInt::getTrue(CGM.getLLVMContext()));
+    }
     if (Attr->getDevice() != OSSTaskDeclAttr::DeviceType::Unknown) {
       TaskInfo.emplace_back(
           getBundleStr(OSSB_device),

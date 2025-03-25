@@ -158,6 +158,8 @@ public:
     OB_oss_immediate = 68,                        // "OB_oss_immediate"
     OB_oss_microtask = 69,                        // "OB_oss_microtask"
     OB_oss_node = 70,                             // "OB_oss_node"
+    OB_oss_nowait = 71,                           // "OB_oss_nowait"
+
   };
 
   /// getMDKindID - Return a unique non-zero ID for the specified metadata kind.

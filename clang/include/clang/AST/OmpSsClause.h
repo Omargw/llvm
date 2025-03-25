@@ -738,6 +738,44 @@ public:
   }
 };
 
+/// This represents 'nowait' clause in the '#pragma oss task' directive.
+///
+/// \code
+/// #pragma oss task nowait
+/// \endcode
+class OSSNoWaitClause : public OSSClause {
+  public:
+    /// Build 'nowait' clause.
+    ///
+    /// \param StartLoc Starting location of the clause.
+    /// \param EndLoc Ending location of the clause.
+    OSSNoWaitClause(SourceLocation StartLoc, SourceLocation EndLoc)
+        : OSSClause(llvm::oss::OSSC_nowait, StartLoc, EndLoc) {}
+
+    /// Build an empty clause.
+    OSSNoWaitClause()
+        : OSSClause(llvm::oss::OSSC_nowait, SourceLocation(), SourceLocation()) {}
+
+    child_range children() {
+      return child_range(child_iterator(), child_iterator());
+    }
+
+    const_child_range children() const {
+      return const_child_range(const_child_iterator(), const_child_iterator());
+    }
+
+    child_range used_children() {
+      return child_range(child_iterator(), child_iterator());
+    }
+    const_child_range used_children() const {
+      return const_child_range(const_child_iterator(), const_child_iterator());
+    }
+
+    static bool classof(const OSSClause *T) {
+      return T->getClauseKind() == llvm::oss::OSSC_nowait;
+    }
+};
+
 /// This represents 'update' clause in the '#pragma oss taskiter|atomic' directive.
 ///
 /// \code

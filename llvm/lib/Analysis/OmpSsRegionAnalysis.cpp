@@ -307,6 +307,12 @@ void DirectiveEnvironment::gatherWaitInfo(OperandBundleDef &OB) {
   Wait = OB.inputs()[0];
 }
 
+void DirectiveEnvironment::gatherNoWaitInfo(OperandBundleDef &OB) {
+  assert(!NoWait && "Only allowed one OperandBundle with this Id");
+  assert(OB.input_size() == 1 && "Only allowed one Value per OperandBundle");
+  NoWait = OB.inputs()[0];
+}
+
 void DirectiveEnvironment::gatherDeviceInfo(OperandBundleDef &OB) {
   assert(!DeviceInfo.Kind && "Only allowed one OperandBundle with this Id");
   assert(OB.input_size() == 1 && "Only allowed one Value per OperandBundle");
@@ -789,6 +795,9 @@ DirectiveEnvironment::DirectiveEnvironment(const Instruction *I) {
       break;
     case LLVMContext::OB_oss_wait:
       gatherWaitInfo(OBDef);
+      break;
+    case LLVMContext::OB_oss_nowait:
+      gatherNoWaitInfo(OBDef);
       break;
     case LLVMContext::OB_oss_device:
       gatherDeviceInfo(OBDef);

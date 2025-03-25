@@ -194,6 +194,11 @@ static void AddWaitData(const OSSExecutableDirective &S, bool &Wait) {
   Wait = !S.getClausesOfKind<OSSWaitClause>().empty();
 }
 
+static void AddNoWaitData(const OSSExecutableDirective &S, bool &NoWait) {
+  assert(!NoWait);
+  NoWait = !S.getClausesOfKind<OSSNoWaitClause>().empty();
+}
+
 static void AddUpdateLoopData(const OSSExecutableDirective &S, bool &Update) {
   assert(!Update);
   Update = !S.getClausesOfKind<OSSUpdateClause>().empty();
@@ -254,6 +259,7 @@ static void AddTaskData(const OSSExecutableDirective &S, OSSTaskDataTy &TaskData
   AddPriorityData(S, TaskData.Priority);
   AddLabelData(S, TaskData.Labels);
   AddWaitData(S, TaskData.Wait);
+  AddNoWaitData(S, TaskData.NoWait);
   AddOnreadyData(S, TaskData.Onready);
   AddReductionData(S, TaskData.Reductions);
   AddDeviceData(S, TaskData.Devices);

@@ -3549,7 +3549,7 @@ private:
       ExprResult &ImmediateRes, ExprResult &MicrotaskRes,
       ExprResult &IfRes, ExprResult &FinalRes,
       ExprResult &CostRes, ExprResult &NodeRes, ExprResult &PriorityRes,
-      ExprResult &ShmemRes, ExprResult &OnreadyRes, bool &Wait,
+      ExprResult &ShmemRes, ExprResult &OnreadyRes, bool &Wait, bool &NoWait,
       unsigned &Device, SourceLocation &DeviceLoc,
       SmallVectorImpl<Expr *> &Labels,
       SmallVectorImpl<Expr *> &Ins, SmallVectorImpl<Expr *> &Outs,

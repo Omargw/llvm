@@ -228,7 +228,7 @@ public:
       DeclGroupPtrTy DG,
       Expr *Immediate, Expr *Microtask,
       Expr *If, Expr *Final, Expr *Cost, Expr *Node,
-      Expr *Priority, Expr *Shmem, Expr *Onready, bool Wait,
+      Expr *Priority, Expr *Shmem, Expr *Onready, bool Wait, bool NoWait,
       unsigned Device, SourceLocation DeviceLoc,
       ArrayRef<Expr *> Labels,
       ArrayRef<Expr *> Ins, ArrayRef<Expr *> Outs, ArrayRef<Expr *> Inouts,
@@ -405,6 +405,9 @@ OSSClause *ActOnOmpSsNodeClause(Expr *E, SourceLocation StartLoc,
                               SourceLocation EndLoc);
   /// Called on well-formed 'wait' clause.
   OSSClause *ActOnOmpSsWaitClause(SourceLocation StartLoc,
+                                    SourceLocation EndLoc);
+  /// Called on well-formed 'nowait' clause.
+  OSSClause *ActOnOmpSsNoWaitClause(SourceLocation StartLoc,
                                     SourceLocation EndLoc);
   /// Called on well-formed 'update' clause.
   OSSClause *ActOnOmpSsUpdateClause(SourceLocation StartLoc,

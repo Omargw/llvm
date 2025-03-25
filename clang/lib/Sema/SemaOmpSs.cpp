@@ -4487,7 +4487,7 @@ SemaOmpSs::DeclGroupPtrTy SemaOmpSs::ActOnOmpSsDeclareTaskDirective(
     DeclGroupPtrTy DG,
     Expr *Immediate, Expr *Microtask,
     Expr *If, Expr *Final, Expr *Cost, Expr *Node, Expr *Priority,
-    Expr *Shmem, Expr *Onready, bool Wait,
+    Expr *Shmem, Expr *Onready, bool Wait, bool NoWait,
     unsigned Device, SourceLocation DeviceLoc,
     ArrayRef<Expr *> Labels,
     ArrayRef<Expr *> Ins, ArrayRef<Expr *> Outs, ArrayRef<Expr *> Inouts,
@@ -4770,7 +4770,7 @@ SemaOmpSs::DeclGroupPtrTy SemaOmpSs::ActOnOmpSsDeclareTaskDirective(
     ImmediateRes.get(), MicrotaskRes.get(),
     IfRes.get(), FinalRes.get(), CostRes.get(), 
     NodeRes.get(), PriorityRes.get(),
-    ShmemRes.get(), Wait, DevType,
+    ShmemRes.get(), Wait, NoWait, DevType,
     OnreadyRes.get(),
     const_cast<Expr **>(LabelsRes.data()), LabelsRes.size(),
     const_cast<Expr **>(Ins.data()), Ins.size(),
@@ -6533,6 +6533,9 @@ OSSClause *SemaOmpSs::ActOnOmpSsClause(OmpSsClauseKind Kind,
   case OSSC_wait:
     Res = ActOnOmpSsWaitClause(StartLoc, EndLoc);
     break;
+  case OSSC_nowait:
+    Res = ActOnOmpSsNoWaitClause(StartLoc, EndLoc);
+    break;
   case OSSC_update:
     Res = ActOnOmpSsUpdateClause(StartLoc, EndLoc);
     break;
@@ -6575,6 +6578,11 @@ OSSClause *SemaOmpSs::ActOnOmpSsClause(OmpSsClauseKind Kind,
 OSSClause *SemaOmpSs::ActOnOmpSsWaitClause(SourceLocation StartLoc,
                                       SourceLocation EndLoc) {
   return new (SemaRef.Context) OSSWaitClause(StartLoc, EndLoc);
+}
+
+OSSClause *SemaOmpSs::ActOnOmpSsNoWaitClause(SourceLocation StartLoc,
+  SourceLocation EndLoc) {
+return new (SemaRef.Context) OSSNoWaitClause(StartLoc, EndLoc);
 }
 
 OSSClause *SemaOmpSs::ActOnOmpSsUpdateClause(SourceLocation StartLoc,
@@ -7107,6 +7115,7 @@ void SemaOmpSs::InstantiateOSSDeclareTaskAttr(
   ExprResult ShmemRes;
   ExprResult OnreadyRes;
   bool Wait = Attr.getWait();
+  bool NoWait = Attr.getNoWait();
   // This value means no clause seen
   unsigned Device = OSSC_DEVICE_unknown + 1;
 
@@ -7272,7 +7281,7 @@ void SemaOmpSs::InstantiateOSSDeclareTaskAttr(
     IfRes.get(), FinalRes.get(),
     CostRes.get(), NodeRes.get(), 
     PriorityRes.get(), ShmemRes.get(), 
-    OnreadyRes.get(), Wait,
+    OnreadyRes.get(), Wait, NoWait,
     Device, SourceLocation(),
     Labels,
     Ins, Outs, Inouts,

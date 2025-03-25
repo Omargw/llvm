@@ -263,6 +263,7 @@ struct DirectiveEnvironment {
   Value *Label = nullptr;
   Value *InstanceLabel = nullptr;
   Value *Wait = nullptr;
+  Value *NoWait = nullptr;
   DirectiveDeviceInfo DeviceInfo;
   DirectiveCapturedInfo CapturedInfo;
   DirectiveNonPODsInfo NonPODsInfo;
@@ -326,6 +327,7 @@ private:
   void gatherLabelInfo(OperandBundleDef &OBDef);
   void gatherOnreadyInfo(OperandBundleDef &OBDef);
   void gatherWaitInfo(OperandBundleDef &OBDef);
+  void gatherNoWaitInfo(OperandBundleDef &OBDef);
   void gatherDeviceInfo(OperandBundleDef &OBDef);
   void gatherDeviceNdrangeInfo(OperandBundleDef &OBDef);
   void gatherDeviceDevFuncInfo(OperandBundleDef &OBDef);
@@ -437,6 +439,7 @@ public:
     return DirectiveKind == OSSD_taskwait;
   }
 
+  // returns if it is directive taskwait with noflush clause
   bool isOmpSsTaskwaitNoflushDirective() const {
     return hasNoflush;
   }

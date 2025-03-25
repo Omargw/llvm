@@ -117,6 +117,7 @@ struct OSSTaskDataTy final {
   const Expr *Priority = nullptr;
   SmallVector<const Expr *, 2> Labels;
   bool Wait = false;
+  bool NoWait = false;
   const Expr *Onready = nullptr;
   bool NoFlush = false;
 

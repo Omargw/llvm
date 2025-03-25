@@ -12515,6 +12515,13 @@ TreeTransform<Derived>::TransformOSSWaitClause(OSSWaitClause *C) {
 
 template <typename Derived>
 OSSClause *
+TreeTransform<Derived>::TransformOSSNoWaitClause(OSSNoWaitClause *C) {
+  // No need to rebuild this clause, no template-dependent parameters.
+  return C;
+}
+
+template <typename Derived>
+OSSClause *
 TreeTransform<Derived>::TransformOSSUpdateClause(OSSUpdateClause *C) {
   // No need to rebuild this clause, no template-dependent parameters.
   return C;

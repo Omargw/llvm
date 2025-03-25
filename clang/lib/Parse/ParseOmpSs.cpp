@@ -185,7 +185,7 @@ static OmpSsClauseKind getOmpSsClauseFromDependKinds(ArrayRef<OmpSsDependClauseK
 ///    clause:
 ///       depend-clause | if-clause | final-clause
 ///       | cost-clause | priority-clause | label-clause
-///       | wait-clause | node-clause
+///       | wait-clause | node-clause | nowait-clause
 ///       | default-clause | in-clause | out-clause
 ///       | inout-clause | concurrent-clause | commutative-clause
 ///       | weakin-clause | weakout-clause | weakinout-clause
@@ -194,7 +194,7 @@ bool Parser::ParseDeclareTaskClauses(
     ExprResult &ImmediateRes, ExprResult &MicrotaskRes,
     ExprResult &IfRes, ExprResult &FinalRes,
     ExprResult &CostRes, ExprResult &NodeRes, ExprResult &PriorityRes,
-    ExprResult &ShmemRes, ExprResult &OnreadyRes, bool &Wait,
+    ExprResult &ShmemRes, ExprResult &OnreadyRes, bool &Wait, bool &NoWait,
     unsigned &Device, SourceLocation &DeviceLoc,
     SmallVectorImpl<Expr *> &Labels,
     SmallVectorImpl<Expr *> &Ins, SmallVectorImpl<Expr *> &Outs,
@@ -283,6 +283,18 @@ bool Parser::ParseDeclareTaskClauses(
         IsError = true;
       }
       Wait = true;
+      FirstClauses[unsigned(CKind)] = true;
+      break;
+    }
+    case OSSC_nowait: {
+      SourceLocation Loc = Tok.getLocation();
+      ConsumeToken();
+      if (FirstClauses[unsigned(CKind)]) {
+        Diag(Loc, diag::err_oss_more_one_clause)
+            << getOmpSsDirectiveName(OSSD_task) << getOmpSsClauseName(CKind) << 0;
+        IsError = true;
+      }
+      NoWait = true;
       FirstClauses[unsigned(CKind)] = true;
       break;
     }
@@ -452,6 +464,7 @@ Parser::ParseOSSDeclareTaskClauses(Parser::DeclGroupPtrTy Ptr,
   ExprResult ShmemRes;
   ExprResult OnreadyRes;
   bool Wait = false;
+  bool NoWait = false;
   // This value means no clause seen
   unsigned Device = OSSC_DEVICE_unknown + 1;
   SourceLocation DeviceLoc;
@@ -489,7 +502,7 @@ Parser::ParseOSSDeclareTaskClauses(Parser::DeclGroupPtrTy Ptr,
       ParseDeclareTaskClauses(ImmediateRes, MicrotaskRes,
                               IfRes, FinalRes,
                               CostRes, NodeRes, PriorityRes,
-                              ShmemRes, OnreadyRes, Wait,
+                              ShmemRes, OnreadyRes, Wait, NoWait,
                               Device, DeviceLoc,
                               Labels,
                               Ins, Outs, Inouts,
@@ -519,7 +532,7 @@ Parser::ParseOSSDeclareTaskClauses(Parser::DeclGroupPtrTy Ptr,
       ImmediateRes.get(), MicrotaskRes.get(),
       IfRes.get(), FinalRes.get(),
       CostRes.get(), NodeRes.get(), PriorityRes.get(),
-      ShmemRes.get(), OnreadyRes.get(), Wait,
+      ShmemRes.get(), OnreadyRes.get(), Wait, NoWait,
       Device, DeviceLoc,
       Labels,
       Ins, Outs, Inouts,
@@ -998,6 +1011,7 @@ OSSClause *Parser::ParseOmpSsClause(OmpSsDirectiveKind DKind,
     Clause = ParseOmpSsSingleExprClause(CKind, WrongDirective);
     break;
   case OSSC_wait:
+  case OSSC_nowait:
   case OSSC_update:
   case OSSC_read:
   case OSSC_write:

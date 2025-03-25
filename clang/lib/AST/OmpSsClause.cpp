@@ -454,3 +454,7 @@ void OSSClausePrinter::VisitOSSRelaxedClause(OSSRelaxedClause *Node) {
 void OSSClausePrinter::VisitOSSNoflushClause(OSSNoflushClause *Node) {
   OS << "noflush";
 }
+
+void OSSClausePrinter::VisitOSSNoWaitClause(OSSNoWaitClause *Node) {
+  OS << "nowait";
+}

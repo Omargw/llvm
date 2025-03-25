@@ -4225,6 +4225,11 @@ bool RecursiveASTVisitor<Derived>::VisitOSSWaitClause(OSSWaitClause *) {
 }
 
 template <typename Derived>
+bool RecursiveASTVisitor<Derived>::VisitOSSNoWaitClause(OSSNoWaitClause *) {
+  return true;
+}
+
+template <typename Derived>
 bool RecursiveASTVisitor<Derived>::VisitOSSUpdateClause(OSSUpdateClause *) {
   return true;
 }

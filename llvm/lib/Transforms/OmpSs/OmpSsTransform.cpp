@@ -2256,6 +2256,16 @@ struct OmpSsDirective {
               Int64Ty),
               4));
     }
+    if (DirEnv.NoWait) {
+      TaskFlagsVar =
+        IRB.CreateOr(
+          TaskFlagsVar,
+          IRB.CreateShl(
+            IRB.CreateZExt(
+              DirEnv.NoWait,
+              Int64Ty),
+              6));
+    }
     if (DirEnv.isOmpSsTaskIterDirective()) {
       TaskFlagsVar =
         IRB.CreateOr(

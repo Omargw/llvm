@@ -199,6 +199,8 @@ void OSSTaskDeclAttr::printPrettyPragma(
   }
   if (getWait())
       OS << " wait";
+  if (getNoWait())
+      OS << " nowait";
   if (auto *E = getShmemExpr()) {
     OS << " shmem(";
     E->printPretty(OS, nullptr, Policy);

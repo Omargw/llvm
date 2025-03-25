@@ -402,6 +402,11 @@ LLVMContext::LLVMContext() : pImpl(new LLVMContextImpl(*this)) {
   assert(OSSNodeEntry->second == LLVMContext::OB_oss_node &&
          "oss_node operand bundle id drifted!");
   (void)OSSNodeEntry;
+
+  auto *OSSNoWaitEntry = pImpl->getOrInsertBundleTag("QUAL.OSS.NOWAIT");
+  assert(OSSNoWaitEntry->second == LLVMContext::OB_oss_nowait &&
+         "oss_nowait operand bundle id drifted!");
+  (void)OSSNoWaitEntry;
   // END OmpSs IDs
 
   SyncScope::ID SingleThreadSSID =

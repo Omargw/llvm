@@ -66,6 +66,9 @@ def OSSC_Label : Clause<"label"> {
 def OSSC_Wait : Clause<"wait"> {
   let clangClass = "OSSWaitClause";
 }
+def OSSC_NoWait : Clause<"nowait"> {
+  let clangClass = "OSSNoWaitClause";
+}
 def OSSC_Update : Clause<"update"> {
   let clangClass = "OSSUpdateClause";
 }
@@ -225,6 +228,7 @@ def OSS_Task : Directive<"task"> {
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
+    VersionedClause<OSSC_NoWait>,
     VersionedClause<OSSC_Onready>,
     VersionedClause<OSSC_Device>,
   ];
@@ -254,6 +258,7 @@ def OSS_DeclareTask : Directive<"declare task"> {
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
+    VersionedClause<OSSC_NoWait>,
     VersionedClause<OSSC_Shmem>,
     VersionedClause<OSSC_Onready>,
     VersionedClause<OSSC_Device>,
@@ -322,6 +327,7 @@ def OSS_TaskLoop : Directive<"taskloop"> {
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
+    VersionedClause<OSSC_NoWait>,
     VersionedClause<OSSC_GrainSize>,
     VersionedClause<OSSC_Collapse>,
   ];
@@ -355,6 +361,7 @@ def OSS_TaskFor : Directive<"task for"> {
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
+    VersionedClause<OSSC_NoWait>,
     VersionedClause<OSSC_ChunkSize>,
     VersionedClause<OSSC_Collapse>,
   ];
@@ -388,6 +395,7 @@ def OSS_TaskLoopFor : Directive<"taskloop for"> {
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
+    VersionedClause<OSSC_NoWait>,
     VersionedClause<OSSC_ChunkSize>,
     VersionedClause<OSSC_GrainSize>,
     VersionedClause<OSSC_Collapse>,
@@ -427,6 +435,7 @@ def OSS_TaskIter : Directive<"taskiter"> {
     VersionedClause<OSSC_Priority>,
     VersionedClause<OSSC_Label>,
     VersionedClause<OSSC_Wait>,
+    VersionedClause<OSSC_NoWait>,
     VersionedClause<OSSC_Onready>,
     VersionedClause<OSSC_Update>,
     VersionedClause<OSSC_Unroll>,
